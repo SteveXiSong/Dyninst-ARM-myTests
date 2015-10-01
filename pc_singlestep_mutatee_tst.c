@@ -103,6 +103,8 @@ int pc_singlestep_mutatee()
    return -1;
 }
 
+#define ARCH_x86
+
 int main(int c, char**v){
     printf("go!\n");
     pid_t child;
@@ -111,7 +113,16 @@ int main(int c, char**v){
 
     if( child == 0 ){
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        __asm__("brk #0");
+#if defined ARCH_x86
+        ///__asm__("brk #0");
+        __asm__("mov $1, %rax");
+        __asm__("mov $0, %rbx");
+        __asm__("int $0x80");
+        //__asm__("int $21");
+        //__asm__("INT $0x80");
+#else
+
+#endif
         pc_singlestep_mutatee();
         printf("after pc_single \n");
         return 0;
@@ -123,24 +134,35 @@ int main(int c, char**v){
         long ins;
         int num=0;
 
-        elf_gregset_t regs;
+        //elf_gregset_t regs;
+        struct user_regs_struct regs;
         struct iovec iovec;
         iovec.iov_base = &regs;
         iovec.iov_len = sizeof(regs);
 
         while(1) {
+            printf("wait\n");
             wait(&status);
             if(WIFEXITED(status)){
                 break;
             }
 
+#if defined(ARCH_x86)
+            ptrace(PTRACE_GETREGS, child, NULL, &iovec);
+            printf("PC: 0x%x\n", regs.rip);
+            unsigned long inst = ptrace(PTRACE_PEEKDATA, child, (void*)regs.rip, NULL);
+            printf("INST: 0x%x\n", inst);
+#else
             ptrace(PTRACE_GETREGSET, child, NT_PRSTATUS, &iovec);
             printf("PC: 0x%x\n", regs[32]);
+#endif
 
-            ptrace(PTRACE_SINGLESTEP, child, NULL, NULL);
+            if(num == 0)
+                ptrace(PTRACE_SINGLESTEP, child, NULL, NULL);
             num++;
             if(num>10)
                 break;
+
 
         }
         fprintf(stderr, "finish\n");
