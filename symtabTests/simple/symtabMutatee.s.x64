@@ -1,0 +1,66 @@
+	.file	"symtabMutatee.C"
+	.section	.rodata
+	.align 8
+.LC0:
+	.string	"void func() is called: hi(%d)\n"
+	.text
+.globl _Z4funci
+	.type	_Z4funci, @function
+_Z4funci:
+.LFB0:
+	.cfi_startproc
+	.cfi_personality 0x3,__gxx_personality_v0
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$48, %rsp
+	movl	%edi, -36(%rbp)
+	movl	$1936287860, -32(%rbp)
+	movl	$544434464, -28(%rbp)
+	movl	$1953701985, -24(%rbp)
+	movl	$1735289202, -20(%rbp)
+	movw	$10, -16(%rbp)
+	movl	-36(%rbp), %eax
+	movl	%eax, %esi
+	movl	$.LC0, %edi
+	movl	$0, %eax
+	call	printf
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	_Z4funci, .-_Z4funci
+	.section	.rodata
+.LC1:
+	.string	"helloworld"
+	.text
+.globl main
+	.type	main, @function
+main:
+.LFB1:
+	.cfi_startproc
+	.cfi_personality 0x3,__gxx_personality_v0
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movl	$.LC1, %edi
+	call	puts
+	movl	$0, -4(%rbp)
+	movl	-4(%rbp), %eax
+	movl	%eax, %edi
+	call	_Z4funci
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE1:
+	.size	main, .-main
+	.ident	"GCC: (GNU) 4.4.7 20120313 (Red Hat 4.4.7-11)"
+	.section	.note.GNU-stack,"",@progbits
